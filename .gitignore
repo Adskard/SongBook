@@ -1,0 +1,5 @@
+/Zpevnik/target/
+/Zpevnik/nbproject/
+nb-configuration.xml
+persistence.xml
+DataSourceConfig.java

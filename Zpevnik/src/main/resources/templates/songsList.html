@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <link th:href="@{/css/main.css}" rel="stylesheet" />
+        <title>
+            Home
+        </title>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header" th:if="${param.error} or ${param.msg}">
+                <div class="modal_content" id="modal_header">
+                        <div th:if="${param.error}">
+                             <p th:text = "${param.error}"></p>
+                        </div>
+                        <div th:if="${param.msg}">
+                            <p th:text = "${param.msg}"></p>
+                        </div>
+                    <a class="close_button right">&times;</a>
+
+                </div>
+                <!-- "x" button functionality on header-->
+                <script>
+                    var modal= document.getElementById("header");
+                    var close= document.getElementsByClassName("close_button")[0];
+                    close.onclick= function(){
+                        modal.style.display="none";
+                    };
+                </script>
+            </div>
+            <div id="body">
+                <h1>
+                    ZPĚVNÍK
+                </h1>
+                    <nav class="site_nav">
+                        <div id="nav_list">
+                            <a th:href="@{/songs}">Zpěvník</a>
+                            <a th:href="@{/user/register}">Registrovat</a>
+                            <div class="right" id="login_list">
+                                <!--Login form-->
+                                <form sec:authorize="!isAuthenticated()"
+                                      th:action="@{/user/login}"
+                                      method="post">
+                                    <input 
+                                        type="hidden" 
+                                        th:name="${_csrf.parameterName}" 
+                                        th:value="${_csrf.token}" />
+                                    <div><label> Username : <input type="text" name="username"/> </label></div>
+                                    <div><label> Password: <input type="password" name="password"/> </label></div>
+                                    <div><input type="submit" value="Sign In"/></div>
+                                </form>
+                                <!--Logout form-->
+                                <form sec:authorize="isAuthenticated()"
+                                      th:action="@{/user/logout}" 
+                                      method="post">
+                                    <div><input type="submit" value="Sign Out"/></div>
+                                </form>
+                            </div>
+                        </div>
+                    </nav>
+                <div class="web_content">
+                    <div class="overflow">
+                        <article class="page content">
+                            <div sec:authorize="hasAnyAuthority('VERIFIED', 'REGULAR')">
+                                <h2>Your songs (Tvůj zpěvník)</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Song Name</th>
+                                            <th>Artist</th>
+                                            <th>Author</th>
+                                        </tr>
+                                    </thead>
+                                    <!-- 
+                                    <tbody>
+                                        <tr th:each="bookSong : ${songBook.songs}">
+                                            <td ><a th:href="@{/song/{bookSong.id}}" th:text="${bookSong.name}"></a></td>
+                                            <td th:text="${bookSong.artist}"></td>
+                                            <td th:text="${bookSong.author}"></td>
+                                        </tr>
+                                    </tbody>
+                                    comment -->
+                                </table>
+                            </div>
+                            <form sec:authorize="hasAuthority('VERIFIED')" th:action="@{songs/addOwn}" method="post">
+                                <input type="text" name="name" value="" />
+                                <textarea name="text" rows="14" cols="20">
+                                </textarea>
+                                
+                            <input type="submit" value="Add song to Song book" name="add" />
+                            </form>
+                            <div>
+                                <h2>All songs</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Song Name</th>
+                                            <th>Artist</th>
+                                            <th>Author</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="song : ${songs}">
+                                            <td ><a th:href="@{/songs/}+ ${song.id}" th:text="${song.name}"></a></td>
+                                            <td th:text="${song.artist}"></td>
+                                            <td th:text="${song.author}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a th:href="@{/songs(page = 1)}">first</a>
+                                <a th:href="@{/songs(page = ${page}-1<=0 ? 1 : ${page}-1)}">previous</a>
+                                <a th:href="@{/songs(page = (${page}+1 > ${maxPages}) ? ${maxPages} : ${page}+1)}">next</a>
+                                <a th:href="@{/songs(page = ${maxPages})}">last</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            <div id="footer">
+                <footer>
+                    <!-- author information -->
+                    <p id="f_left">Autor: Adam Škarda</p>
+                    <p id="f_center">Email: skardada:at:fel.cvut.cz</p>
+                    <p id="f_right">&copy; 2021</p>
+                </footer>
+            </div>
+        </div>
+    </body>
+</html>
+
